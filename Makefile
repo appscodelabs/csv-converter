@@ -43,7 +43,7 @@ endif
 ### These variables should not need tweaking.
 ###
 
-SRC_PKGS := csv-to-json merge-json
+SRC_PKGS := csv-to-json json-to-listmonk-csv listmonk-csv-to-json merge-json
 SRC_DIRS := $(SRC_PKGS) # directories which hold app source (not vendored)
 
 DOCKER_PLATFORMS := linux/amd64 linux/arm linux/arm64

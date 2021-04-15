@@ -129,7 +129,7 @@ func convert() error {
 
 	base := filepath.Base(inFile)
 	ext := filepath.Ext(inFile)
-	outFilename := filepath.Join(outDir, fmt.Sprintf("%s_listmonk.json", strings.TrimSuffix(base, ext)))
+	outFilename := filepath.Join(outDir, fmt.Sprintf("%s.json", strings.TrimSuffix(base, ext)))
 
 	data, err := json.MarshalIndent(rows, "", "  ")
 	if err != nil {

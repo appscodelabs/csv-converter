@@ -22,8 +22,8 @@ var (
 
 func main() {
 	var rootCmd = &cobra.Command{
-		Use:   "csv-to-json",
-		Short: "Convert CSV files to json",
+		Use:   "merge-json",
+		Short: "Merge other json files into a base json file",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return merge()
 		},
