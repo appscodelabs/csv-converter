@@ -20,65 +20,115 @@ package main
 import (
 	"bytes"
 	"encoding/csv"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"kmodules.xyz/client-go/logs"
 
+	"github.com/gobuffalo/flect"
 	"github.com/spf13/cobra"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 )
 
-type Location struct {
-	App     string
-	Version string
-}
+var (
+	input      string
+	outDir     string
+	datasource string
+	colRenames map[string]string
+)
 
 func main() {
-	var (
-		input  string
-		output string
-	)
 	var rootCmd = &cobra.Command{
-		Use:   "csv-converter",
-		Short: "Convert CSV files to Listmonk format",
+		Use:   "csv-to-json",
+		Short: "Convert CSV files to json",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return convert(output, input)
+			return convert(outDir, input)
 		},
 	}
 	flags := rootCmd.Flags()
 
 	flags.AddGoFlagSet(flag.CommandLine)
 	flags.StringVar(&input, "in", input, "Path to csv file")
-	flags.StringVar(&output, "out", output, "Path to output directory")
+	flags.StringVar(&outDir, "out", outDir, "Path to outDir directory")
+	flags.StringVar(&datasource, "datasource", datasource, "Data source (mailchimp, github, license_log)")
+	flags.StringToStringVar(&colRenames, "renames", colRenames, "Provide a map of column renames")
 
 	logs.ParseFlags()
 
 	utilruntime.Must(rootCmd.Execute())
 }
 
+func KeyFunc(key string) string {
+	replace, ok := colRenames[key]
+	if !ok {
+		return replace
+	}
+	key_ := flect.Underscore(key)
+	if strings.HasPrefix(key_, "email") {
+		return "email"
+	}
+	return key_
+}
+
+func ValueFunc(v string) interface{} {
+	v = strings.TrimSpace(v)
+	smallV := strings.ToLower(v)
+	if smallV == "true" || smallV == "t" || smallV == "y" || smallV == "yes" {
+		return true
+	}
+	if smallV == "false" || smallV == "f" || smallV == "n" || smallV == "no" {
+		return false
+	}
+	if i, err := strconv.Atoi(smallV); err == nil {
+		return i
+	}
+	if f, err := strconv.ParseFloat(v, 64); err == nil {
+		return f
+	}
+	return v
+}
+
 func convert(outDir, in string) error {
-	data, err := ioutil.ReadFile(in)
+	input, err := ioutil.ReadFile(in)
 	if err != nil {
 		return err
 	}
 
-	r := csv.NewReader(bytes.NewReader(data))
+	r := csv.NewReader(bytes.NewReader(input))
 
 	records, err := r.ReadAll()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	fmt.Print(records)
+
+	rows := make([]interface{}, 0, len(records))
+
+	for _, r := range records[1:] {
+		x := map[string]interface{}{}
+		for i, v := range r {
+			v = strings.TrimSpace(v)
+			if v == "" {
+				continue
+			}
+			x[KeyFunc(records[0][i])] = ValueFunc(v)
+		}
+		rows = append(rows, x)
+	}
 
 	base := filepath.Base(in)
 	ext := filepath.Ext(in)
 	outFilename := filepath.Join(outDir, fmt.Sprintf("%s_listmonk.%s", strings.TrimSuffix(base, ext), ext))
 
+	data, err := json.MarshalIndent(rows, "", "  ")
+	if err != nil {
+		return err
+	}
 	return ioutil.WriteFile(outFilename, data, 0644)
 }
