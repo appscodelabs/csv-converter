@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/gobuffalo/flect v0.2.2
+	github.com/imdario/mergo v0.3.5
 	github.com/spf13/cobra v1.1.3
 	k8s.io/apimachinery v0.21.0-rc.0
 	kmodules.xyz/client-go v0.0.0-20210406074726-03c22995b8fb

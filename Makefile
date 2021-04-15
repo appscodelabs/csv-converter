@@ -43,8 +43,8 @@ endif
 ### These variables should not need tweaking.
 ###
 
-SRC_PKGS :=
-SRC_DIRS := $(SRC_PKGS) *.go # directories which hold app source (not vendored)
+SRC_PKGS := csv-to-json merge-json
+SRC_DIRS := $(SRC_PKGS) # directories which hold app source (not vendored)
 
 DOCKER_PLATFORMS := linux/amd64 linux/arm linux/arm64
 BIN_PLATFORMS    := $(DOCKER_PLATFORMS) darwin/amd64

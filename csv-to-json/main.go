@@ -36,10 +36,10 @@ import (
 )
 
 var (
-	input      string
+	inFile     string = "/home/tamal/Downloads/mailchimp/subscribed_members_export_0e633f6c70.csv"
 	outDir     string
 	datasource string
-	colRenames map[string]string
+	renames    = map[string]string{}
 )
 
 func main() {
@@ -47,16 +47,16 @@ func main() {
 		Use:   "csv-to-json",
 		Short: "Convert CSV files to json",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return convert(outDir, input)
+			return convert()
 		},
 	}
 	flags := rootCmd.Flags()
 
 	flags.AddGoFlagSet(flag.CommandLine)
-	flags.StringVar(&input, "in", input, "Path to csv file")
+	flags.StringVar(&inFile, "in", inFile, "Path to csv file")
 	flags.StringVar(&outDir, "out", outDir, "Path to outDir directory")
 	flags.StringVar(&datasource, "datasource", datasource, "Data source (mailchimp, github, license_log)")
-	flags.StringToStringVar(&colRenames, "renames", colRenames, "Provide a map of column renames")
+	flags.StringToStringVar(&renames, "renames", nil, "Provide a map of column renames")
 
 	logs.ParseFlags()
 
@@ -64,15 +64,17 @@ func main() {
 }
 
 func KeyFunc(key string) string {
-	replace, ok := colRenames[key]
-	if !ok {
+	if replace, ok := renames[key]; ok {
 		return replace
 	}
-	key_ := flect.Underscore(key)
-	if strings.HasPrefix(key_, "email") {
+	key = flect.Underscore(key)
+	if strings.HasPrefix(key, "email") {
 		return "email"
 	}
-	return key_
+	if replace, ok := renames[key]; ok {
+		return replace
+	}
+	return key
 }
 
 func ValueFunc(v string) interface{} {
@@ -93,8 +95,8 @@ func ValueFunc(v string) interface{} {
 	return v
 }
 
-func convert(outDir, in string) error {
-	input, err := ioutil.ReadFile(in)
+func convert() error {
+	input, err := ioutil.ReadFile(inFile)
 	if err != nil {
 		return err
 	}
@@ -106,9 +108,12 @@ func convert(outDir, in string) error {
 		return err
 	}
 
-	fmt.Print(records)
-
 	rows := make([]interface{}, 0, len(records))
+
+	headers := make([]string, 0, len(records[0]))
+	for _, entry := range records[0] {
+		headers = append(headers, KeyFunc(entry))
+	}
 
 	for _, r := range records[1:] {
 		x := map[string]interface{}{}
@@ -117,14 +122,14 @@ func convert(outDir, in string) error {
 			if v == "" {
 				continue
 			}
-			x[KeyFunc(records[0][i])] = ValueFunc(v)
+			x[headers[i]] = ValueFunc(v)
 		}
 		rows = append(rows, x)
 	}
 
-	base := filepath.Base(in)
-	ext := filepath.Ext(in)
-	outFilename := filepath.Join(outDir, fmt.Sprintf("%s_listmonk.%s", strings.TrimSuffix(base, ext), ext))
+	base := filepath.Base(inFile)
+	ext := filepath.Ext(inFile)
+	outFilename := filepath.Join(outDir, fmt.Sprintf("%s_listmonk.json", strings.TrimSuffix(base, ext)))
 
 	data, err := json.MarshalIndent(rows, "", "  ")
 	if err != nil {
