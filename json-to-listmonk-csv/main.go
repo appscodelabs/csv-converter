@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -76,10 +77,14 @@ func convert() error {
 				nameparts = append(nameparts, last.(string))
 				delete(entry, "last_name")
 			}
-			record[1] = strings.Join(nameparts, " ")
+			if len(nameparts) > 0 {
+				record[1] = strings.Join(nameparts, " ")
+			} else {
+				record[1] = DetectNameFromEmail(record[0])
+			}
 		}
 
-		rest, err := json.Marshal(record)
+		rest, err := json.Marshal(entry)
 		if err != nil {
 			return err
 		}
@@ -94,6 +99,7 @@ func convert() error {
 	var buf bytes.Buffer
 
 	w := csv.NewWriter(&buf)
+	_ = w.Write([]string{"email", "name", "attributes"})
 	_ = w.WriteAll(records) // calls Flush internally
 	if err := w.Error(); err != nil {
 		return err
@@ -101,4 +107,30 @@ func convert() error {
 
 	outFile := fmt.Sprintf("%s_listmonk.csv", strings.TrimSuffix(filepath.Base(in), filepath.Ext(in)))
 	return ioutil.WriteFile(filepath.Join(filepath.Dir(in), outFile), buf.Bytes(), 0644)
+}
+
+func DetectNameFromEmail(email string) string {
+	idx := strings.IndexRune(email, '@')
+	if idx > -1 {
+		if idx <= 2 { // [2 letters]@domain.com, detect name from domain.com
+			email = email[idx+1:]
+			idx2 := strings.IndexRune(email, '.')
+			if idx2 > -1 {
+				email = email[0:idx2]
+			}
+		} else {
+			name := email[0:idx]
+			re := regexp.MustCompile("\\d+")
+			name = re.ReplaceAllString(name, "")
+			// in case numbers@qq.com type email
+			if name != "" {
+				email = name
+			}
+		}
+	}
+
+	email = strings.Replace(email, ".", " ", -1)
+	email = strings.Replace(email, "_", " ", -1)
+	email = strings.Replace(email, "-", " ", -1)
+	return strings.Title(email)
 }

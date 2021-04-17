@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	base string
+	in   string
 	keys []string
 )
 
@@ -31,7 +31,7 @@ func main() {
 	flags := rootCmd.Flags()
 
 	flags.AddGoFlagSet(flag.CommandLine)
-	flags.StringVar(&base, "base", base, "Path to base json file")
+	flags.StringVar(&in, "in", in, "Path to in json file")
 	flags.StringSliceVar(&keys, "keys", keys, "Keys to be kept")
 
 	logs.ParseFlags()
@@ -42,7 +42,7 @@ func main() {
 type Row map[string]interface{}
 
 func filter() error {
-	entries, err := LoadFile(base)
+	entries, err := LoadFile(in)
 	if err != nil {
 		return err
 	}
@@ -66,8 +66,8 @@ func filter() error {
 		return err
 	}
 
-	dir := filepath.Dir(base)
-	filename := filepath.Join(dir, fmt.Sprintf("%s_filtered.json", strings.TrimSuffix(filepath.Base(base), filepath.Ext(base))))
+	dir := filepath.Dir(in)
+	filename := filepath.Join(dir, fmt.Sprintf("%s_filtered.json", strings.TrimSuffix(filepath.Base(in), filepath.Ext(in))))
 	return ioutil.WriteFile(filename, data, 0644)
 }
 
