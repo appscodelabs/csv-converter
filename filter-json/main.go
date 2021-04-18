@@ -16,8 +16,9 @@ import (
 )
 
 var (
-	in   string
-	keys []string
+	in        string
+	keys      []string
+	blocklist string
 )
 
 func main() {
@@ -31,8 +32,9 @@ func main() {
 	flags := rootCmd.Flags()
 
 	flags.AddGoFlagSet(flag.CommandLine)
-	flags.StringVar(&in, "in", in, "Path to in json file")
+	flags.StringVar(&in, "in", in, "Path to input json file")
 	flags.StringSliceVar(&keys, "keys", keys, "Keys to be kept")
+	flags.StringVar(&blocklist, "blocklist", blocklist, "Path to block list json file. Matching emails from this file will be removed")
 
 	logs.ParseFlags()
 
@@ -42,6 +44,21 @@ func main() {
 type Row map[string]interface{}
 
 func filter() error {
+	blocked := map[string]bool{}
+	if blocklist != "" {
+		entries, err := LoadFile(blocklist)
+		if err != nil {
+			return err
+		}
+		for _, row := range entries {
+			email, ok := row["email"]
+			if !ok {
+				continue
+			}
+			blocked[email.(string)] = true
+		}
+	}
+
 	entries, err := LoadFile(in)
 	if err != nil {
 		return err
@@ -49,6 +66,14 @@ func filter() error {
 
 	out := make([]Row, 0, len(entries))
 	for _, row := range entries {
+		email, ok := row["email"]
+		if !ok {
+			continue
+		}
+		if blocked[email.(string)] {
+			continue
+		}
+
 		filtereRow := Row{}
 		for _, key := range keys {
 			if v, ok := row[key]; ok {
