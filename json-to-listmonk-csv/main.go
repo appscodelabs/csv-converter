@@ -57,14 +57,14 @@ func convert() error {
 	for _, entry := range entries {
 		record := make([]string, 3)
 
-		if name, ok := entry["email"]; ok {
-			record[0] = name.(string)
+		if email, ok := entry["email"]; ok {
+			record[0] = email.(string)
 			delete(entry, "email")
 		} else {
 			return fmt.Errorf("email missing is %+v", entry)
 		}
 
-		if name, ok := entry["name"]; ok {
+		if name, ok := entry["name"]; ok && IsString(name) {
 			record[1] = name.(string)
 			delete(entry, "name")
 		} else {
@@ -133,4 +133,9 @@ func DetectNameFromEmail(email string) string {
 	email = strings.Replace(email, "_", " ", -1)
 	email = strings.Replace(email, "-", " ", -1)
 	return strings.Title(email)
+}
+
+func IsString(v interface{}) bool {
+	_, ok := v.(string)
+	return ok
 }

@@ -58,7 +58,7 @@ func merge() error {
 			if !found {
 				baseEntries[email] = other
 			} else {
-				err = mergo.Map(existing, other, func(config *mergo.Config) {
+				err = mergo.Map(&existing, other, func(config *mergo.Config) {
 					config.Overwrite = overwrite
 				})
 				if err != nil {

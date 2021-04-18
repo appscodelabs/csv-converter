@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -21,6 +22,7 @@ var (
 	renames   = map[string]string{}
 	keys      []string
 	blocklist string
+	omitEmpty bool
 )
 
 func main() {
@@ -38,6 +40,7 @@ func main() {
 	flags.StringToStringVar(&renames, "renames", nil, "Provide a map of column renames")
 	flags.StringSliceVar(&keys, "keys", keys, "Keys to be kept")
 	flags.StringVar(&blocklist, "blocklist", blocklist, "Path to block list json file. Matching emails from this file will be removed")
+	flags.BoolVar(&omitEmpty, "omit-empty", omitEmpty, "If true, omit empty values from input json")
 
 	logs.ParseFlags()
 
@@ -69,7 +72,6 @@ func filter() error {
 
 	out := make([]Row, 0, len(entries))
 	for _, row := range entries {
-
 		email, ok := row["email"]
 		if !ok {
 			continue
@@ -116,6 +118,9 @@ func LoadFile(filename string) ([]Row, error) {
 	for _, row := range entries {
 		x := map[string]interface{}{}
 		for k, v := range row {
+			if omitEmpty && reflect.ValueOf(v).IsZero() {
+				continue
+			}
 			x[KeyFunc(k)] = v
 		}
 		out = append(out, x)
