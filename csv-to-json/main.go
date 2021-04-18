@@ -36,10 +36,9 @@ import (
 )
 
 var (
-	inFile     string = "/home/tamal/Downloads/mailchimp/subscribed_members_export_0e633f6c70.csv"
-	outDir     string
-	datasource string
-	renames    = map[string]string{}
+	inFile  string
+	outDir  string
+	renames = map[string]string{}
 )
 
 func main() {
@@ -55,7 +54,6 @@ func main() {
 	flags.AddGoFlagSet(flag.CommandLine)
 	flags.StringVar(&inFile, "in", inFile, "Path to csv file")
 	flags.StringVar(&outDir, "out", outDir, "Path to outDir directory")
-	flags.StringVar(&datasource, "datasource", datasource, "Data source (mailchimp, github, license_log)")
 	flags.StringToStringVar(&renames, "renames", nil, "Provide a map of column renames")
 
 	logs.ParseFlags()

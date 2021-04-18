@@ -69,7 +69,7 @@ func merge() error {
 		}
 	}
 
-	out := make([]Row, len(baseEntries))
+	out := make([]Row, 0, len(baseEntries))
 	for _, entry := range baseEntries {
 		out = append(out, entry)
 	}
