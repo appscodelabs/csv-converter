@@ -108,12 +108,21 @@ func convert() error {
 
 	rows := make([]interface{}, 0, len(records))
 
+	emailIdx := -1
 	headers := make([]string, 0, len(records[0]))
-	for _, entry := range records[0] {
-		headers = append(headers, KeyFunc(entry))
+	for i, entry := range records[0] {
+		key := KeyFunc(entry)
+		if key == "email" {
+			emailIdx = i
+		}
+		headers = append(headers, key)
 	}
 
 	for _, r := range records[1:] {
+		if r[emailIdx] == "" {
+			continue
+		}
+
 		x := map[string]interface{}{}
 		for i, v := range r {
 			v = strings.TrimSpace(v)
