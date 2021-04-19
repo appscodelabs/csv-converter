@@ -67,6 +67,8 @@ func convert() error {
 		if name, ok := entry["name"]; ok && IsString(name) {
 			record[1] = name.(string)
 			delete(entry, "name")
+			delete(entry, "first_name")
+			delete(entry, "last_name")
 		} else {
 			nameparts := make([]string, 0, 2)
 			if first, found := entry["first_name"]; found {
