@@ -18,11 +18,12 @@ import (
 )
 
 var (
-	in        string
-	renames   = map[string]string{}
-	keys      []string
-	blocklist string
-	omitEmpty bool
+	in          string
+	renames     = map[string]string{}
+	keys        []string
+	blocklist   string
+	omitEmpty   bool
+	emailDomain string
 )
 
 func main() {
@@ -41,6 +42,7 @@ func main() {
 	flags.StringSliceVar(&keys, "keys", keys, "Keys to be kept")
 	flags.StringVar(&blocklist, "blocklist", blocklist, "Path to block list json file. Matching emails from this file will be removed")
 	flags.BoolVar(&omitEmpty, "omit-empty", omitEmpty, "If true, omit empty values from input json")
+	flags.StringVar(&emailDomain, "email-domain", emailDomain, "Returns emails with this domain only")
 
 	logs.ParseFlags()
 
@@ -70,13 +72,25 @@ func filter() error {
 		return err
 	}
 
+	emailDomain = strings.TrimPrefix(emailDomain, "@")
+
 	out := make([]Row, 0, len(entries))
 	for _, row := range entries {
-		email, ok := row["email"]
+		e2, ok := row["email"]
 		if !ok {
 			continue
 		}
-		if blocked[email.(string)] {
+		email, ok := e2.(string)
+		if !ok {
+			continue
+		}
+		if email == "" {
+			continue
+		}
+		if blocked[email] {
+			continue
+		}
+		if emailDomain != "" && !strings.HasSuffix(email, "@"+emailDomain) {
 			continue
 		}
 
@@ -98,7 +112,13 @@ func filter() error {
 	}
 
 	dir := filepath.Dir(in)
-	filename := filepath.Join(dir, fmt.Sprintf("%s_filtered.json", strings.TrimSuffix(filepath.Base(in), filepath.Ext(in))))
+
+	domainSuffix := ""
+	if emailDomain != "" {
+		domainSuffix = "_" + emailDomain
+	}
+
+	filename := filepath.Join(dir, fmt.Sprintf("%s_filtered%s.json", strings.TrimSuffix(filepath.Base(in), filepath.Ext(in)), domainSuffix))
 	return ioutil.WriteFile(filename, data, 0644)
 }
 
@@ -134,7 +154,7 @@ func KeyFunc(key string) string {
 		return replace
 	}
 	key = flect.Underscore(key)
-	if strings.HasPrefix(key, "email") {
+	if strings.HasPrefix(key, "email_address") {
 		return "email"
 	}
 	if replace, ok := renames[key]; ok {
