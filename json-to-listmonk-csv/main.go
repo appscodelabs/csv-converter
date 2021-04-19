@@ -139,7 +139,7 @@ func DetectNameFromEmail(email string) string {
 			}
 		} else {
 			name := email[0:idx]
-			re := regexp.MustCompile("\\d+")
+			re := regexp.MustCompile(`\\d+`)
 			name = re.ReplaceAllString(name, "")
 			// in case numbers@qq.com type email
 			if name != "" {

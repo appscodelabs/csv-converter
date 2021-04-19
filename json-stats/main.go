@@ -33,7 +33,7 @@ import (
 )
 
 var (
-	in        string
+	in      string
 	renames = map[string]string{}
 )
 
@@ -80,8 +80,8 @@ func LoadFile(filename string) error {
 		}
 	}
 
-	fmt.Printf("Total objects: %d\n" ,total)
-	fmt.Printf("Total objects with email: %d\n" ,n)
+	fmt.Printf("Total objects: %d\n", total)
+	fmt.Printf("Total objects with email: %d\n", n)
 
 	return nil
 }

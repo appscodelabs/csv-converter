@@ -33,7 +33,7 @@ import (
 )
 
 var (
-	in        string
+	in      string
 	renames = map[string]string{}
 )
 
@@ -56,8 +56,6 @@ func main() {
 	utilruntime.Must(rootCmd.Execute())
 }
 
-type Row map[string]interface{}
-
 func LoadFile(filename string) error {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -70,7 +68,7 @@ func LoadFile(filename string) error {
 		return err
 	}
 
-	total := len(records)-1
+	total := len(records) - 1
 
 	emailIdx := -1
 	for i, entry := range records[0] {
@@ -88,8 +86,8 @@ func LoadFile(filename string) error {
 		n++
 	}
 
-	fmt.Printf("Total rows: %d\n" ,total)
-	fmt.Printf("Total rows with email: %d\n" ,n)
+	fmt.Printf("Total rows: %d\n", total)
+	fmt.Printf("Total rows with email: %d\n", n)
 
 	return nil
 }
