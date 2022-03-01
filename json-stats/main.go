@@ -38,7 +38,7 @@ var (
 )
 
 func main() {
-	var rootCmd = &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:   "json-tats",
 		Short: "Print json stats",
 		RunE: func(cmd *cobra.Command, args []string) error {

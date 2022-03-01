@@ -38,7 +38,7 @@ var (
 )
 
 func main() {
-	var rootCmd = &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:   "merge-json",
 		Short: "Merge other json files into a base json file",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -97,7 +97,7 @@ func merge() error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(base, data, 0644)
+	return ioutil.WriteFile(base, data, 0o644)
 }
 
 // email -> Row

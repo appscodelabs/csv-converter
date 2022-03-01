@@ -38,7 +38,7 @@ var (
 )
 
 func main() {
-	var rootCmd = &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:   "csv-tats",
 		Short: "Print csv stats",
 		RunE: func(cmd *cobra.Command, args []string) error {

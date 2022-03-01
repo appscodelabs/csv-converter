@@ -44,7 +44,7 @@ var (
 )
 
 func main() {
-	var rootCmd = &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:   "filter-json",
 		Short: "Filter keys from json",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -136,7 +136,7 @@ func filter() error {
 	}
 
 	filename := filepath.Join(dir, fmt.Sprintf("%s_filtered%s.json", strings.TrimSuffix(filepath.Base(in), filepath.Ext(in)), domainSuffix))
-	return ioutil.WriteFile(filename, data, 0644)
+	return ioutil.WriteFile(filename, data, 0o644)
 }
 
 // email -> Row

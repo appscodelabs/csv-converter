@@ -42,7 +42,7 @@ var (
 )
 
 func main() {
-	var rootCmd = &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:   "csv-to-json",
 		Short: "Convert CSV files to json",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -142,5 +142,5 @@ func convert() error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(outFilename, data, 0644)
+	return ioutil.WriteFile(outFilename, data, 0o644)
 }

@@ -34,12 +34,10 @@ import (
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 )
 
-var (
-	in string
-)
+var in string
 
 func main() {
-	var rootCmd = &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:   "listmonk-csv-to-json",
 		Short: "Convert Listmonk ready csv file to json file",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -93,5 +91,5 @@ func convert() error {
 	}
 
 	outFile := fmt.Sprintf("%s_listmonk.csv", strings.TrimSuffix(filepath.Base(in), filepath.Ext(in)))
-	return ioutil.WriteFile(filepath.Join(filepath.Dir(in), outFile), data, 0644)
+	return ioutil.WriteFile(filepath.Join(filepath.Dir(in), outFile), data, 0o644)
 }
