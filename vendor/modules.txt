@@ -15,6 +15,16 @@ github.com/inconshreveable/mousetrap
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 github.com/spf13/pflag
+# golang.org/x/text v0.3.4
+## explicit
+golang.org/x/text/cases
+golang.org/x/text/internal
+golang.org/x/text/internal/language
+golang.org/x/text/internal/language/compact
+golang.org/x/text/internal/tag
+golang.org/x/text/language
+golang.org/x/text/transform
+golang.org/x/text/unicode/norm
 # k8s.io/apimachinery v0.21.0-rc.0 => github.com/kmodules/apimachinery v0.19.0-alpha.0.0.20200922195535-0c9a1b86beec
 ## explicit
 k8s.io/apimachinery/pkg/util/clock
