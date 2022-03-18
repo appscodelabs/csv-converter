@@ -32,6 +32,8 @@ import (
 	"kmodules.xyz/client-go/logs"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 )
 
@@ -149,7 +151,7 @@ func DetectNameFromEmail(email string) string {
 	email = strings.Replace(email, ".", " ", -1)
 	email = strings.Replace(email, "_", " ", -1)
 	email = strings.Replace(email, "-", " ", -1)
-	return strings.Title(email)
+	return cases.Title(language.English).String(email)
 }
 
 func IsString(v interface{}) bool {
