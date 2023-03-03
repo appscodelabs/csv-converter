@@ -23,7 +23,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -94,7 +94,7 @@ func ValueFunc(v string) interface{} {
 }
 
 func convert() error {
-	input, err := ioutil.ReadFile(inFile)
+	input, err := os.ReadFile(inFile)
 	if err != nil {
 		return err
 	}
@@ -142,5 +142,5 @@ func convert() error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(outFilename, data, 0o644)
+	return os.WriteFile(outFilename, data, 0o644)
 }

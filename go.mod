@@ -5,10 +5,15 @@ go 1.16
 require (
 	github.com/gobuffalo/flect v0.2.2
 	github.com/imdario/mergo v0.3.5
+	github.com/json-iterator/go v1.1.12
+	github.com/modern-go/reflect2 v1.0.2
 	github.com/spf13/cobra v1.1.3
+	golang.org/x/crypto v0.6.0
+	golang.org/x/net v0.7.0
 	golang.org/x/text v0.3.4
 	k8s.io/apimachinery v0.21.0-rc.0
 	kmodules.xyz/client-go v0.0.0-20210406074726-03c22995b8fb
+	kmodules.xyz/resource-metadata v0.15.0
 )
 
 replace bitbucket.org/ww/goautoneg => gomodules.xyz/goautoneg v0.0.0-20120707110453-a547fc61f48d

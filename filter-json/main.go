@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"reflect"
 	"sort"
@@ -136,12 +136,12 @@ func filter() error {
 	}
 
 	filename := filepath.Join(dir, fmt.Sprintf("%s_filtered%s.json", strings.TrimSuffix(filepath.Base(in), filepath.Ext(in)), domainSuffix))
-	return ioutil.WriteFile(filename, data, 0o644)
+	return os.WriteFile(filename, data, 0o644)
 }
 
 // email -> Row
 func LoadFile(filename string) ([]Row, error) {
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}

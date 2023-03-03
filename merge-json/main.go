@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"sort"
 
 	"kmodules.xyz/client-go/logs"
@@ -97,12 +97,12 @@ func merge() error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(base, data, 0o644)
+	return os.WriteFile(base, data, 0o644)
 }
 
 // email -> Row
 func LoadFile(filename string) (map[string]Row, error) {
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}

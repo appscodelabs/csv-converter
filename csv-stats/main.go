@@ -22,7 +22,7 @@ import (
 	"encoding/csv"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
 	"kmodules.xyz/client-go/logs"
@@ -57,7 +57,7 @@ func main() {
 }
 
 func LoadFile(filename string) error {
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}

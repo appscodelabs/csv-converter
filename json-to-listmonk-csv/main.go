@@ -23,7 +23,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -60,7 +60,7 @@ func main() {
 type Row map[string]interface{}
 
 func convert() error {
-	data, err := ioutil.ReadFile(in)
+	data, err := os.ReadFile(in)
 	if err != nil {
 		return err
 	}
@@ -125,7 +125,7 @@ func convert() error {
 	}
 
 	outFile := fmt.Sprintf("%s_listmonk.csv", strings.TrimSuffix(filepath.Base(in), filepath.Ext(in)))
-	return ioutil.WriteFile(filepath.Join(filepath.Dir(in), outFile), buf.Bytes(), 0o644)
+	return os.WriteFile(filepath.Join(filepath.Dir(in), outFile), buf.Bytes(), 0o644)
 }
 
 func DetectNameFromEmail(email string) string {
