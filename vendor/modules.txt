@@ -15,7 +15,7 @@ github.com/inconshreveable/mousetrap
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 github.com/spf13/pflag
-# golang.org/x/text v0.3.4
+# golang.org/x/text v0.3.8
 ## explicit
 golang.org/x/text/cases
 golang.org/x/text/internal
